@@ -1030,6 +1030,6 @@ function init(){
   if (state.active === 'days' && state.openDay) focusDay(state.openDay, false);
 }
 init();
-</script>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 </body>
 </html>

@@ -730,14 +730,12 @@ function toggleInline(cmd){
   const r = sel.getRangeAt(0);
   const isStyled = queryState(cmd) || !!styledAncestor(names);
   if (r.collapsed) {
-    // Курсор внутри жирного/курсивного: снимаем стиль с этого куска
     const anc = styledAncestor(names);
     if (isStyled && anc) { unwrap(anc); return; }
-    document.execCommand(cmd, false, null); // включаем для будущего текста
+    document.execCommand(cmd, false, null);
     return;
   }
   document.execCommand(cmd, false, null);
-  // Страховка: если WebKit не снял стиль — убираем обёртку вручную
   if (isStyled && queryState(cmd)) {
     const anc = styledAncestor(names);
     if (anc && anc.contains(r.commonAncestorContainer)) unwrap(anc);
@@ -769,7 +767,6 @@ function applyHighlight(color){
   if (!r) { toast('Сначала выделите текст пальцем'); return; }
   const sel = getSelection();
   if (r.collapsed) {
-    // Повторное нажатие на тот же цвет убирает выделение под курсором
     let n = sel.anchorNode;
     if (n && n.nodeType === 3) n = n.parentNode;
     while (n && n !== editor && n.nodeName !== 'MARK') n = n.parentNode;
@@ -786,7 +783,6 @@ function applyHighlight(color){
   const marks = [...editor.querySelectorAll('mark')].filter(m => r.intersectsNode(m));
   const same = marks.filter(m => (m.style.backgroundColor || '').toLowerCase() === color.toLowerCase());
   if (marks.length && same.length === marks.length) {
-    // Всё уже выделено этим цветом — снимаем
     marks.forEach(unwrap);
     try { restoreRange(r); } catch(e){}
   } else {
@@ -873,7 +869,6 @@ document.addEventListener('selectionchange', () => {
   vv.addEventListener('scroll', onCh);
   window.addEventListener('resize', onCh);
   window.addEventListener('orientationchange', onCh);
-  // iOS сообщает о клавиатуре с задержкой — дублируем проверки после фокуса
   document.addEventListener('focusin', () => { onCh(); setTimeout(onCh, 250); setTimeout(onCh, 700); });
   upd();
 })();
@@ -1030,6 +1025,7 @@ function init(){
   if (state.active === 'days' && state.openDay) focusDay(state.openDay, false);
 }
 init();
+</script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 </body>
 </html>
